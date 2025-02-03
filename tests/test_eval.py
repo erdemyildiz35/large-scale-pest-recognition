@@ -6,6 +6,9 @@ from omegaconf import open_dict
 
 from pest_rec.eval import evaluate
 from pest_rec.train import train
+from pest_rec.models.pest_detector import PestDetector
+from pest_rec.data.dataset import PestDataset
+from torchvision import transforms
 
 
 @pytest.mark.slow
@@ -30,3 +33,26 @@ def test_train_eval(tmp_path, cfg_train, cfg_eval):
 
     assert test_metric_dict["test/acc"] > 0.0
     assert abs(train_metric_dict["test/acc"].item() - test_metric_dict["test/acc"].item()) < 0.001
+
+
+# Model oluştur
+model = PestDetector(num_classes=6, backbone="resnet50")
+
+# Veri dönüşümlerini tanımla
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+                       std=[0.229, 0.224, 0.225])
+])
+
+# Dataset oluştur
+dataset = PestDataset(
+    root_dir="data",
+    pest_classes=['aphids', 'beetles', 'caterpillars', 
+                 'mites', 'thrips', 'whiteflies'],
+    transform=transform
+)
+
+print(f"Dataset size: {len(dataset)}")
+print(f"Model backbone: {model.backbone_name}")

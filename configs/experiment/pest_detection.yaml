@@ -1,0 +1,30 @@
+defaults:
+  - model: pest_detector
+  - data: pest_dataset
+  - optimizer: adam
+  - scheduler: cosine
+  - _self_
+
+model:
+  backbone: resnet50
+  num_classes: 6
+  pretrained: true
+  dropout: 0.5
+  
+data:
+  pest_classes: ['aphids', 'beetles', 'caterpillars', 'mites', 'thrips', 'whiteflies']
+  image_size: 224
+  batch_size: 32
+  num_workers: 4
+  
+training:
+  max_epochs: 100
+  learning_rate: 0.001
+  weight_decay: 1e-4
+  
+augmentation:
+  random_crop: true
+  random_flip: true
+  random_rotation: true
+  color_jitter: true
+  gaussian_blur: true 
